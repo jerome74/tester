@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIP-C01 — Question {{ q_num }} / {{ total }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="progress-bar-wrap">
+            <div class="progress-bar" style="width: {{ (q_num / total * 100)|round(1) }}%"></div>
+        </div>
+        <div class="progress-label">Question {{ q_num }} of {{ total }}</div>
+
+        <div class="card">
+            <div class="question-text">{{ question.question }}</div>
+
+            {% if not verified %}
+            <!-- Selection form -->
+            <form action="{{ url_for('verify') }}" method="post" id="quiz-form">
+                {% if question.multi %}
+                <p class="multi-hint">Select <strong>all</strong> correct answers (multiple selection)</p>
+                {% endif %}
+                <div class="options">
+                    {% set user_letters = user_answer.split(',') | map('trim') | list if user_answer else [] %}
+                    {% for option in question.options %}
+                    {% set letter = option[0] %}
+                    {% if question.multi %}
+                    <label class="option-label {% if letter in user_letters %}selected{% endif %}">
+                        <input type="checkbox" name="answer" value="{{ letter }}"
+                               {% if letter in user_letters %}checked{% endif %}>
+                        <span class="option-text">{{ option }}</span>
+                    </label>
+                    {% else %}
+                    <label class="option-label {% if user_answer == letter %}selected{% endif %}">
+                        <input type="radio" name="answer" value="{{ letter }}"
+                               {% if user_answer == letter %}checked{% endif %} required>
+                        <span class="option-text">{{ option }}</span>
+                    </label>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="actions">
+                    <button type="submit" class="btn btn-verify">Verify Answer</button>
+                </div>
+            </form>
+            {% else %}
+            <!-- Verified result -->
+            {% set correct_letters = question.answers %}
+            {% set user_letters = user_answer.split(',') | map('trim') | list if user_answer else [] %}
+            <div class="options">
+                {% for option in question.options %}
+                {% set letter = option[0] %}
+                {% set is_correct_opt = letter in correct_letters %}
+                {% set is_user_opt = letter in user_letters %}
+                <div class="option-result
+                    {% if is_correct_opt %}correct-opt{% endif %}
+                    {% if is_user_opt and not is_correct_opt %}wrong-opt{% endif %}
+                    {% if is_user_opt and is_correct_opt %}user-correct{% endif %}">
+                    {{ option }}
+                    {% if is_correct_opt %}<span class="badge badge-correct">✓ Correct</span>{% endif %}
+                    {% if is_user_opt and not is_correct_opt %}<span class="badge badge-wrong">✗ Your answer</span>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if is_correct %}
+            <div class="result-banner correct-banner">Correct! Well done.</div>
+            {% else %}
+            <div class="result-banner wrong-banner">Incorrect. The correct answer{{ 's are' if question.multi else ' is' }}: <strong>{{ question.answer }}</strong></div>
+            {% endif %}
+
+            <form action="{{ url_for('quiz') }}" method="post">
+                <input type="hidden" name="action" value="next">
+                <div class="actions">
+                    {% if q_num < total %}
+                    <button type="submit" class="btn btn-primary">Next Question →</button>
+                    {% else %}
+                    <a href="{{ url_for('result') }}" class="btn btn-primary">See Results →</a>
+                    {% endif %}
+                </div>
+            </form>
+            {% endif %}
+        </div>
+
+        <div class="nav-footer">
+            <a href="{{ url_for('reset') }}" class="btn btn-secondary btn-sm"
+               onclick="return confirm('Quit and restart?')">Quit</a>
+            <form action="{{ url_for('end') }}" method="post" style="display:inline; margin-left: 24px;">
+                <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('End the test now? Remaining questions will be marked as incorrect.')">End</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIP-C01 — Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="card result-card">
+            <h2>Exam Complete</h2>
+
+            <div class="score-circle {% if passed %}score-pass{% else %}score-fail{% endif %}">
+                <span class="score-pct">{{ percentage }}%</span>
+                <span class="score-label">{{ correct }} / {{ total }}</span>
+            </div>
+
+            <div class="result-verdict {% if passed %}verdict-pass{% else %}verdict-fail{% endif %}">
+                {% if passed %}PASSED{% else %}FAILED{% endif %}
+                <span class="verdict-sub">Passing score: 72%</span>
+            </div>
+
+            <div class="result-actions">
+                <a href="{{ url_for('start') }}" class="btn btn-primary">Retry Exam</a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Home</a>
+            </div>
+        </div>
+
+        <!-- Detailed review -->
+        <div class="review-section">
+            <h3>Question Review</h3>
+            {% for d in details %}
+            <div class="review-item {% if d.is_correct %}review-correct{% else %}review-wrong{% endif %}">
+                <div class="review-header">
+                    <span class="review-num">Q{{ d.num }}</span>
+                    <span class="review-status">{% if d.is_correct %}✓ Correct{% else %}✗ Incorrect{% endif %}</span>
+                </div>
+                <div class="review-question">{{ d.question }}</div>
+                <div class="review-answers">
+                    <span class="review-label">Your answer:</span>
+                    <span class="{% if d.is_correct %}text-correct{% else %}text-wrong{% endif %}">
+                        {{ d.user_answer if d.user_answer else '(no answer)' }}
+                    </span>
+                    {% if not d.is_correct %}
+                    &nbsp;|&nbsp;
+                    <span class="review-label">Correct:</span>
+                    <span class="text-correct">{{ d.correct_answer }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

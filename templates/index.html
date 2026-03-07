@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIP-C01 Exam Simulator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="card welcome-card">
+            <h1>AWS AIP-C01</h1>
+            <h2>Generative AI Developer Professional</h2>
+            <p class="subtitle">Exam Simulator</p>
+            <div class="info-box">
+                <div class="info-item">
+                    <span class="info-label">Total Questions</span>
+                    <span class="info-value">{{ total }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Quiz Questions</span>
+                    <span class="info-value">{{ quiz_size }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Passing Score</span>
+                    <span class="info-value">72%</span>
+                </div>
+            </div>
+            <p class="description">
+                {{ quiz_size }} questions will be randomly selected from the {{ total }}-question bank.
+                Use the <strong>Verify</strong> button after each question to check your answer immediately.
+            </p>
+            <form action="{{ url_for('start') }}" method="post">
+                <button type="submit" class="btn btn-primary btn-large">Start Exam</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
