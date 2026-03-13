@@ -9,6 +9,18 @@ app.secret_key = 'aip-c01-quiz-secret-key-2026'
 QUIZ_SIZE = 75
 
 
+def running_score(indices, answers):
+    """Return (correct_count, answered_count) based on current session answers."""
+    correct = 0
+    for i_str, user_answer in answers.items():
+        q = questions[indices[int(i_str)]]
+        correct_set = set(a.strip() for a in q['answer'].split(',')) if q['answer'] else set()
+        user_set = set(a.strip() for a in user_answer.split(',')) if user_answer else set()
+        if correct_set == user_set and bool(correct_set):
+            correct += 1
+    return correct, len(answers)
+
+
 @app.route('/')
 def index():
     return render_template('index.html', total=len(questions), quiz_size=QUIZ_SIZE)
@@ -45,13 +57,16 @@ def quiz():
     answers = session.get('answers', {})
     user_answer = answers.get(str(current))
 
+    score_correct, score_answered = running_score(indices, answers)
     return render_template(
         'quiz.html',
         question=q,
         q_num=current + 1,
         total=QUIZ_SIZE,
         user_answer=user_answer,
-        verified=False
+        verified=False,
+        score_correct=score_correct,
+        score_answered=score_answered,
     )
 
 
@@ -78,6 +93,7 @@ def verify():
     answers[str(current)] = user_answer
     session['answers'] = answers
 
+    score_correct, score_answered = running_score(indices, answers)
     return render_template(
         'quiz.html',
         question=q,
@@ -85,7 +101,9 @@ def verify():
         total=QUIZ_SIZE,
         user_answer=user_answer,
         is_correct=is_correct,
-        verified=True
+        verified=True,
+        score_correct=score_correct,
+        score_answered=score_answered,
     )
 
 

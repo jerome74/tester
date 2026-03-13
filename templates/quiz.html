@@ -84,6 +84,34 @@
             {% endif %}
         </div>
 
+        {% if score_answered > 0 %}
+        {% set score_pct = (score_correct / score_answered * 100) | round(1) %}
+        {% if score_pct >= 85 %}
+            {% set score_color = '#1a8a3c' %}
+            {% set score_bg    = '#d4edda' %}
+        {% elif score_pct >= 72 %}
+            {% set score_color = '#b06000' %}
+            {% set score_bg    = '#fff3cd' %}
+        {% else %}
+            {% set score_color = '#c0392b' %}
+            {% set score_bg    = '#fde8e8' %}
+        {% endif %}
+        <div class="score-tracker" style="background:{{ score_bg }}; border-left: 5px solid {{ score_color }};">
+            <span style="color:{{ score_color }}; font-weight:700; font-size:1.05rem;">
+                Score: {{ score_correct }} / {{ score_answered }} correct &nbsp;·&nbsp; {{ score_pct }}%
+            </span>
+            <div class="score-bar-wrap">
+                <div class="score-bar" style="width:{{ score_pct }}%; background:{{ score_color }};"></div>
+            </div>
+            <span style="color:{{ score_color }}; font-size:0.82rem;">
+                {% if score_pct >= 85 %}Excellent — keep it up!
+                {% elif score_pct >= 72 %}Passing — stay focused.
+                {% else %}Below passing threshold (72%).
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+
         <div class="nav-footer">
             <a href="{{ url_for('reset') }}" class="btn btn-secondary btn-sm"
                onclick="return confirm('Quit and restart?')">Quit</a>

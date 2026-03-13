@@ -303,6 +303,29 @@ body {
     font-size: 0.85rem;
 }
 
+/* Running score tracker */
+.score-tracker {
+    border-radius: 10px;
+    padding: 14px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.score-bar-wrap {
+    background: rgba(0,0,0,0.1);
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.score-bar {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
 /* Nav footer */
 .nav-footer {
     display: flex;
